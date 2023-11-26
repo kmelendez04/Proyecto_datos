@@ -88,7 +88,7 @@ try:
     connection = psycopg2.connect(
         host='localhost',
         user='postgres',
-        password='perfume',
+        password='123456789',
         database='Proyecto_final'
     )
     print("Conexión Exitosa")
@@ -131,7 +131,7 @@ try:
     connection = psycopg2.connect(
         host='localhost',
         user='postgres',
-        password='macc',
+        password='123456789',
         database='Proyecto_final'
     )
     print("Conexión Exitosa")
@@ -142,7 +142,7 @@ try:
     df = pd.DataFrame(rows, columns=["accomm_id", "accomm_count", "total_amount", "accomm_rank"])
     melted_df = pd.melt(df, id_vars=["accomm_id"], value_vars=["accomm_count", "total_amount"], var_name="variable", value_name="value")
 
-    app = Dash(_name_)
+    app = Dash(__name__)
     fig = px.bar(
         melted_df,
         x="value",
@@ -174,7 +174,7 @@ try:
         )
     ])
 
-    if _name_ == '_main_':
+    if __name__ == '_main_':
         app.run_server(debug=True)
 
 except Exception as ex:
