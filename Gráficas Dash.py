@@ -127,35 +127,45 @@ import psycopg2
 import pandas as pd
 import plotly.express as px
 
-try: 
+try:
     connection = psycopg2.connect(
         host='localhost',
         user='postgres',
-        password='123456789',
+        password='macc',
         database='Proyecto_final'
     )
-    print("Conexión Exitosa")  
+    print("Conexión Exitosa")
     cursor = connection.cursor()
-    cursor.execute("SELECT accomm_id, COUNT(accomm_id) AS accomm_count, SUM(amount) AS total_amount, RANK() OVER (ORDER BY COUNT(accomm_id) DESC) AS accomm_rank FROM ticket_flights GROUP BY accomm_id")
+    cursor.execute(
+        "SELECT accomm_id, COUNT(accomm_id) AS accomm_count, SUM(amount) AS total_amount, RANK() OVER (ORDER BY COUNT(accomm_id) DESC) AS accomm_rank FROM ticket_flights GROUP BY accomm_id")
     rows = cursor.fetchall()
     df = pd.DataFrame(rows, columns=["accomm_id", "accomm_count", "total_amount", "accomm_rank"])
     melted_df = pd.melt(df, id_vars=["accomm_id"], value_vars=["accomm_count", "total_amount"], var_name="variable", value_name="value")
 
-    app = Dash(__name__)
+    app = Dash(_name_)
     fig = px.bar(
         melted_df,
-        x="accomm_id",
-        y="value",
+        x="value",
+        y="accomm_id",
         color="variable",
         barmode="group",
-        opacity=0.7,  
+        orientation="h",
+        opacity=0.7,
         width=800,
-        height=500,  
+        height=500,
         labels={"accomm_id": "", "": ""},
     )
+
+    # Modificamos las etiquetas del eje x
+    fig.update_yaxes(
+        tickvals=[0, 1, 2, 3, 4, 5],  # Las posiciones en el eje x para colocar las etiquetas
+        ticktext=["Business", "Economy", "Business", "Comfort", "Economy", "Comfort"],  # Las etiquetas que queremos asignar
+        title_text="Cantidad"  # Título del eje x
+    )
+
     app.layout = html.Div(children=[
         html.H1(children='Datos por acomodación'),
-        html.Div(children='''Muestra la cantidad de reservas por cada acomodacion y además muestra 
+        html.Div(children='''Muestra la cantidad de reservas por cada acomodación y además muestra 
                  la cantidad de dinero que genera cada uno 
                  '''),
         dcc.Graph(
@@ -164,7 +174,7 @@ try:
         )
     ])
 
-    if __name__ == '__main__':
+    if _name_ == '_main_':
         app.run_server(debug=True)
 
 except Exception as ex:
