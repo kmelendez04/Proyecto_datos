@@ -77,43 +77,49 @@ except Exception as ex:
 finally:
     connection.close()
     print("Conexion finalizada")
-    
-# Punto 3 solo con cantidad de reservas por acomodacion
 
+
+# Punto 3 solo con cantidad de reservas por acomodacion
 from dash import Dash, html, dcc
 import psycopg2
 import plotly.express as px
-try: 
+
+try:
     connection = psycopg2.connect(
-        host = 'localhost',
-        user = 'postgres',
-        password = '123456789',
-        database = 'Proyecto_final'
+        host='localhost',
+        user='postgres',
+        password='perfume',
+        database='Proyecto_final'
     )
-    print("Conexión Exitosa")  
+    print("Conexión Exitosa")
     cursor = connection.cursor()
-    cursor.execute("SELECT accomm_id, COUNT(accomm_id) AS accomm_count, SUM(amount), RANK() OVER (ORDER BY COUNT(accomm_id) DESC) AS accomm_rank FROM ticket_flights GROUP BY accomm_id")
+    cursor.execute(
+        "SELECT accomm_id, COUNT(accomm_id) AS accomm_count FROM ticket_flights GROUP BY accomm_id")
     rows = cursor.fetchall()
     for row in rows:
         print(row)
+
     app = Dash(__name__)
-    fig = px.bar(rows, x=0, y=1, color_discrete_sequence = ["green"])
-    app.layout = html.Div(children = [
-        html.H1(children = 'Reservas por acomodacion'),
-        html.Div(children = '''
+    fig = px.pie(rows, names=['Business', 'Comfort','Economy'], values=1, title='Reservas por acomodacion')
+    
+    app.layout = html.Div(children=[
+        html.H1(children='Reservas por acomodacion'),
+        html.Div(children='''
                  Cuenta la cantidad de reservas que tiene cada acomodación
         '''),
         dcc.Graph(
-            id = 'example-graph',
-            figure = fig)
+            id='example-graph',
+            figure=fig)
     ])
-    if __name__ == '__main__':
-        app.run_server(debug = True)
+
+    if __name__ == '_main_':
+        app.run_server(debug=True)
 except Exception as ex:
     print(ex)
 finally:
     connection.close()
     print("Conexion finalizada")
+    
     
 #Punto 3 con ambos datos
 from dash import Dash, html, dcc
